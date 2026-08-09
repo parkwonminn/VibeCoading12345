@@ -37,8 +37,7 @@ loginForm.addEventListener("submit", async (e) => {
   try {
     await signInWithEmail(email, password);
     showAlert(formAlert, "로그인에 성공했습니다.", "success");
-    // TODO: 실제 연동 시 로그인 성공 후 이동할 페이지로 교체
-    // window.location.href = "index.html";
+    window.location.href = "welcome.html";
   } catch (err) {
     showAlert(formAlert, getFriendlyErrorMessage(err), "error");
   } finally {
