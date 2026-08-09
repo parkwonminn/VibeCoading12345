@@ -11,8 +11,8 @@
 // supabase.auth.signInWithPassword / supabase.auth.signUp 을 호출합니다.
 // ============================================================
 
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://pkdjuiebvgtdxpzyocve.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrZGp1aWVidmd0ZHhwenlvY3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxNjMzNzYsImV4cCI6MjEwMTczOTM3Nn0.iXF8bcnOE1eXveOdw3kL7B94Wcr4w2cbD_ydcQztD1k";
 
 const isSupabaseConfigured =
   SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
