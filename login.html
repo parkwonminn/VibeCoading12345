@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인</title>
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-card">
+  <div class="auth-brand">
+    <div class="logo">VibeCoading</div>
+    <p>다시 만나서 반가워요</p>
+  </div>
+
+  <h1>로그인</h1>
+  <p class="auth-subtitle">이메일과 비밀번호를 입력해주세요.</p>
+
+  <div id="formAlert" class="form-alert"></div>
+
+  <form id="loginForm" novalidate>
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+      <div class="field-error" id="emailError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" autocomplete="current-password" required>
+      <div class="field-error" id="passwordError"></div>
+    </div>
+
+    <button type="submit" class="btn-submit" id="submitBtn">로그인</button>
+  </form>
+
+  <div class="auth-footer">
+    아직 계정이 없으신가요? <a href="signup.html">회원가입</a>
+  </div>
+</div>
+
+<!-- 실제 배포 시 아래 주석을 해제하고 supabase-js CDN을 연결하세요.
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+-->
+<script src="js/validation.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

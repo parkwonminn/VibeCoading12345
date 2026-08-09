@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입</title>
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-card">
+  <div class="auth-brand">
+    <div class="logo">VibeCoading</div>
+    <p>새 계정을 만들어보세요</p>
+  </div>
+
+  <h1>회원가입</h1>
+  <p class="auth-subtitle">아래 정보를 입력해서 가입을 완료하세요.</p>
+
+  <div id="formAlert" class="form-alert"></div>
+
+  <form id="signupForm" novalidate>
+    <div class="form-group">
+      <label for="username">닉네임</label>
+      <input type="text" id="username" name="username" placeholder="2~16자 (한글/영문/숫자)" autocomplete="nickname" required>
+      <div class="field-error" id="usernameError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+      <div class="field-error" id="emailError"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input type="password" id="password" name="password" placeholder="영문+숫자 포함 8자 이상" autocomplete="new-password" required>
+      <div class="field-error" id="passwordError"></div>
+      <div class="password-rules">영문, 숫자를 포함해 8자 이상 입력해주세요.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="passwordConfirm">비밀번호 확인</label>
+      <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요" autocomplete="new-password" required>
+      <div class="field-error" id="passwordConfirmError"></div>
+    </div>
+
+    <button type="submit" class="btn-submit" id="submitBtn">회원가입</button>
+  </form>
+
+  <div class="auth-footer">
+    이미 계정이 있으신가요? <a href="login.html">로그인</a>
+  </div>
+</div>
+
+<!-- 실제 배포 시 아래 주석을 해제하고 supabase-js CDN을 연결하세요.
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+-->
+<script src="js/validation.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/signup.js"></script>
+</body>
+</html>
