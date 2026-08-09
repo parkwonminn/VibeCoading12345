@@ -48,3 +48,142 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================================
+-- 쇼핑몰용 임시 스키마 (카테고리 / 상품 / 장바구니 / 주문 / 주문상세)
+-- ============================================================
+
+-- 1) 카테고리 테이블
+create table public.categories (
+  id bigint generated always as identity primary key,
+  name text not null unique,
+  created_at timestamptz not null default now()
+);
+
+alter table public.categories enable row level security;
+
+create policy "categories_select_all"
+  on public.categories for select
+  to authenticated, anon
+  using (true);
+
+-- 2) 상품 테이블
+create table public.products (
+  id bigint generated always as identity primary key,
+  category_id bigint references public.categories(id) on delete set null,
+  name text not null,
+  description text,
+  price numeric(10,2) not null check (price >= 0),
+  stock int not null default 0 check (stock >= 0),
+  image_url text,
+  created_at timestamptz not null default now()
+);
+
+create index products_category_id_idx on public.products(category_id);
+
+alter table public.products enable row level security;
+
+create policy "products_select_all"
+  on public.products for select
+  to authenticated, anon
+  using (true);
+
+-- 3) 장바구니 테이블 (사용자별로 담은 상품)
+create table public.cart_items (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  product_id bigint not null references public.products(id) on delete cascade,
+  quantity int not null default 1 check (quantity > 0),
+  created_at timestamptz not null default now(),
+  unique (user_id, product_id)
+);
+
+create index cart_items_user_id_idx on public.cart_items(user_id);
+
+alter table public.cart_items enable row level security;
+
+create policy "cart_items_select_own"
+  on public.cart_items for select
+  using (auth.uid() = user_id);
+
+create policy "cart_items_insert_own"
+  on public.cart_items for insert
+  with check (auth.uid() = user_id);
+
+create policy "cart_items_update_own"
+  on public.cart_items for update
+  using (auth.uid() = user_id);
+
+create policy "cart_items_delete_own"
+  on public.cart_items for delete
+  using (auth.uid() = user_id);
+
+-- 4) 주문 테이블
+create table public.orders (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  status text not null default 'pending'
+    check (status in ('pending','paid','shipped','completed','cancelled')),
+  total_price numeric(10,2) not null default 0 check (total_price >= 0),
+  created_at timestamptz not null default now()
+);
+
+create index orders_user_id_idx on public.orders(user_id);
+
+alter table public.orders enable row level security;
+
+create policy "orders_select_own"
+  on public.orders for select
+  using (auth.uid() = user_id);
+
+create policy "orders_insert_own"
+  on public.orders for insert
+  with check (auth.uid() = user_id);
+
+-- 5) 주문 상세 테이블 (주문 시점 상품 정보 스냅샷)
+create table public.order_items (
+  id bigint generated always as identity primary key,
+  order_id bigint not null references public.orders(id) on delete cascade,
+  product_id bigint references public.products(id) on delete set null,
+  product_name text not null,
+  price numeric(10,2) not null check (price >= 0),
+  quantity int not null check (quantity > 0),
+  created_at timestamptz not null default now()
+);
+
+create index order_items_order_id_idx on public.order_items(order_id);
+
+alter table public.order_items enable row level security;
+
+create policy "order_items_select_own"
+  on public.order_items for select
+  using (
+    exists (
+      select 1 from public.orders
+      where orders.id = order_items.order_id
+        and orders.user_id = auth.uid()
+    )
+  );
+
+create policy "order_items_insert_own"
+  on public.order_items for insert
+  with check (
+    exists (
+      select 1 from public.orders
+      where orders.id = order_items.order_id
+        and orders.user_id = auth.uid()
+    )
+  );
+
+-- 6) 테스트용 임시 카테고리/상품 데이터
+insert into public.categories (name) values
+  ('의류'), ('전자제품'), ('식품'), ('도서');
+
+insert into public.products (category_id, name, description, price, stock, image_url)
+select id, '샘플 티셔츠', '테스트용 임시 상품입니다.', 19900, 50, null from public.categories where name = '의류'
+union all
+select id, '샘플 무선이어폰', '테스트용 임시 상품입니다.', 59000, 30, null from public.categories where name = '전자제품'
+union all
+select id, '샘플 원두커피', '테스트용 임시 상품입니다.', 12900, 100, null from public.categories where name = '식품'
+union all
+select id, '샘플 소설책', '테스트용 임시 상품입니다.', 15800, 40, null from public.categories where name = '도서';
